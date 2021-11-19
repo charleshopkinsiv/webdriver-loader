@@ -1,13 +1,6 @@
 <?php
-///////////////////////////////////////////////////////////////////
-//
-//  Loads Selenium WebDriver with chrome
-//
-//  Check chromeversion with chromium-browser --help
-//
-//
-///////////////////////////////////////////////////////////////////
-namespace charleshopkinsiv\WebDriver;
+
+namespace WebDriverLoader;
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Chrome\ChromeDriver;
