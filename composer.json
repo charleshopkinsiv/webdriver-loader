@@ -1,5 +1,5 @@
 {
-    "name": "charleshopkinsiv/WebDriverLoader",
+    "name": "charleshopkinsiv/web-driver-loader",
     "require": {
         "php-webdriver/webdriver": "^1.11"
     },
