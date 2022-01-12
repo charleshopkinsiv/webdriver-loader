@@ -55,7 +55,7 @@ class ChromeDriverLoader
         return ChromeDriver::start( $capabilities );
     }
 
-    public static function downloadBin()
+    private static function downloadBin()
     {
 
             // Look up chrome version
