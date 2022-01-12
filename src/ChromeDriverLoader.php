@@ -12,7 +12,7 @@ use Facebook\WebDriver\WebDriverExpectedCondition;
 class ChromeDriverLoader
 {
 
-    private static $chromedriver_file = "/home/charles/var/chromedriver";
+    private static $chromedriver_file = "~/var/chromedriver";
     private static $default_user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36";
     private static $driver_url_base = "https://chromedriver.storage.googleapis.com/";
     private static $driver_file_name = "chromedriver_linux64.zip";
