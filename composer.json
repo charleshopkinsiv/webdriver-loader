@@ -1,5 +1,5 @@
 {
-    "name": "charleshopkinsiv/web-driver-loader",
+    "name": "charleshopkinsiv/webdriver-loader",
     "require": {
         "php-webdriver/webdriver": "^1.11"
     },
@@ -8,7 +8,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/charleshopkinsiv/web-driver-loader"
+            "url": "https://github.com/charleshopkinsiv/webdriver-loader"
         }
     ],
     "authors": [
