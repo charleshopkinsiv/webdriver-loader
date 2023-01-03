@@ -40,6 +40,7 @@ class ChromeDriverLoader
                 $options = new ChromeOptions();
                 $options->addArguments([
                     '--headless', 
+                    '--remote-debugging-port=9222',
                     'window-size=1024,768',
                     '--user-agent=' . $user_agent,
                 ]);
@@ -53,6 +54,7 @@ class ChromeDriverLoader
 
 
                 //  Check how many chromedriver instances are running
+                // count(explode('/n', exec('ps -aux | grep chromedriver'))) - 2;
 
 
                 //  Delete any that are inactive past minute
@@ -80,6 +82,9 @@ class ChromeDriverLoader
 
             catch(\Exception $e) {
 
+
+                printf($e . "\n");
+
                 if(empty($already_downloaded)) {
 
                     self::downloadBin();
@@ -98,6 +103,9 @@ class ChromeDriverLoader
             exec("chromium-browser --version" , $chrome_version);
             $chrome_version = explode(" ", $chrome_version[0])[1];
             $chrome_parent_version = explode(".", $chrome_version)[0];
+
+            // If... Delete and redownload
+            // Facebook\WebDriver\Exception\SessionNotCreatedException
 
 
             // Find most recent file
