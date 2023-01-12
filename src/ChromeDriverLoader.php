@@ -68,7 +68,7 @@ class ChromeDriverLoader
         if(!is_file(self::$chromedriver_dir . "/chromedriver"))
             self::downloadBin();
 
-        $instances = array_filter(explode("\n", shell_exec('ps -aux | grep "php artisan queue:work"')));
+        $instances = array_filter(explode("\n", shell_exec('ps -aux | grep chromedriver')));
         $running = (count($instances) > 2) ? true : false;
         if(!$running) {
 
