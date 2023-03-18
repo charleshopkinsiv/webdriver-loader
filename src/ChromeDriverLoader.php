@@ -12,6 +12,7 @@ class ChromeDriverLoader
 
     private static $max_instances   = 10;
     private static $port            = 4444;
+    private static $dont_try_again  = false;
 
     private static $chromedriver_dir = __DIR__ . "/../bin";
     private static $default_user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36";
@@ -40,26 +41,41 @@ class ChromeDriverLoader
         }
 
         try{
-
+            printf("Starting chromedriver\n");
             self::startChromeDriver();
             self::setIp($ip_address);  
             $options = new ChromeOptions();
             $options->addArguments([
                 '--headless', 
-                // '--remote-debugging-port=9222',
+                '--remote-debugging-port=9222',
                 'window-size=1024,768',
                 '--user-agent=' . empty($user_agent) ? self::$default_user_agent : $user_agent,
             ]);
             $capabilities = DesiredCapabilities::chrome();
             $capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
-
-            // ChromeDriver::start($capabilities);
+            printf("Launching chromedriver\n");
             return RemoteWebDriver::create('http://localhost:' . self::$port, $capabilities);
         }
-        catch(\Exception $e) {
+        catch(\Exception $e) { // Delete, download and retry
 
-            throw $e;
+            printf("CD Error: %s\n", $e->getTraceAsString());
+            if(self::$dont_try_again) {
+
+                throw new \Exception('Unknown webdriver loader error');
+            }
+
+            if(file_exists(self::$chromedriver_dir . "/chromedriver")) {
+
+                unlink(self::$chromedriver_dir . "/chromedriver");
+            }
+            self::downloadBin();
+            self::$dont_try_again = true;
+            self::load($user_agent, $ip_address);
         }
+        // catch(\Exception $e) {
+
+        //     printf("CD Error%s\n", $e->getTraceAsString());
+        // }
     }
 
     private static function startChromeDriver()
