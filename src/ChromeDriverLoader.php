@@ -21,18 +21,18 @@ class ChromeDriverLoader
 
     private static RemoteWebDriver $instance;
 
-    public static function instance(string $user_agent = "", string $ip_address = "") : RemoteWebDriver
+    public static function instance(string $user_agent = "") : RemoteWebDriver
     {
 
         if(!isset(self::$instance)) {
 
-            self::$instance = self::load($user_agent, $ip_address);
+            self::$instance = self::load($user_agent);
         }
 
         return self::$instance;
     }
 
-    public static function load(string $user_agent = "", string $ip_address = "")
+    public static function load(string $user_agent = "")
     {
 
         if(PHP_OS_FAMILY != 'Linux') {
@@ -52,12 +52,6 @@ class ChromeDriverLoader
             '--user-agent=' . empty($user_agent) ? self::$default_user_agent : $user_agent,
         ]); 
         $capabilities = DesiredCapabilities::chrome();
-        // $capabilities->setCapability(WebdriverCapabilityType::PROXY,
-        //     [
-        //         'proxyType' => 'manual',
-        //         'httpProxy' => 'localhost:8080',
-        //         'sslProxy'  => 'localhost:8080',
-        //     ]);
         $capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
         $driver = RemoteWebDriver::create(
             'http://localhost:' . self::$port, $capabilities);
@@ -71,23 +65,8 @@ class ChromeDriverLoader
         if(!is_file(self::$chromedriver_dir . "/chromedriver"))
             self::downloadBin();
 
-        // $instances = array_filter(explode("\n", shell_exec('ps -aux | grep chromedriver')));
-        // $running = (count($instances) > 2) ? true : false;
-        // $running = false;
-        // if(!$running) {
-
         exec(self::$chromedriver_dir . '/chromedriver --port=' . self::$port . ' > /dev/null 2>&1 &');
         sleep(3);
-        
-        // } 
-    }
-
-    private static function setIp(string $ip_address)
-    {
-
-        putenv("https_proxy=" . $ip_address);
-        putenv("http_proxy="  . $ip_address);
-        putenv("no_proxy=localhost,127.0.0.1");
     }
 
     public static function downloadBin()
