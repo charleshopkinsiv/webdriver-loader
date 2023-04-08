@@ -15,7 +15,7 @@ class ChromeDriverLoader
     private static $dont_try_again  = false;
 
     private static $chromedriver_dir = __DIR__ . "/../bin";
-    private static $default_user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36";
+    private static $default_user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36";
     private static $driver_url_base = "https://chromedriver.storage.googleapis.com/";
     private static $zip_file = __DIR__ . "/DOWNLOAD.zip";
 
@@ -40,42 +40,29 @@ class ChromeDriverLoader
             throw new \Exception('ChromeDriverLoader only supports Linux OS\'s');
         }
 
-        try{
-            printf("Starting chromedriver\n");
-            self::startChromeDriver();
-            self::setIp($ip_address);  
-            $options = new ChromeOptions();
-            $options->addArguments([
-                '--headless', 
-                '--remote-debugging-port=9222',
-                'window-size=1024,768',
-                '--user-agent=' . empty($user_agent) ? self::$default_user_agent : $user_agent,
-            ]);
-            $capabilities = DesiredCapabilities::chrome();
-            $capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
-            printf("Launching chromedriver\n");
-            return RemoteWebDriver::create('http://localhost:' . self::$port, $capabilities);
-        }
-        catch(\Exception $e) { // Delete, download and retry
-
-            printf("CD Error: %s\n", $e->getTraceAsString());
-            if(self::$dont_try_again) {
-
-                throw new \Exception('Unknown webdriver loader error');
-            }
-
-            if(file_exists(self::$chromedriver_dir . "/chromedriver")) {
-
-                unlink(self::$chromedriver_dir . "/chromedriver");
-            }
-            self::downloadBin();
-            self::$dont_try_again = true;
-            self::load($user_agent, $ip_address);
-        }
-        // catch(\Exception $e) {
-
-        //     printf("CD Error%s\n", $e->getTraceAsString());
-        // }
+        printf("Starting chromedriver\n");
+        self::startChromeDriver();
+        // self::setIp($ip_address);  
+        $options = new ChromeOptions();
+        $options->addArguments([
+            '--headless', 
+            '--no-sandbox',
+            '--remote-debugging-port=9222',
+            'window-size=1024,768',
+            '--user-agent=' . empty($user_agent) ? self::$default_user_agent : $user_agent,
+        ]); 
+        $capabilities = DesiredCapabilities::chrome();
+        // $capabilities->setCapability(WebdriverCapabilityType::PROXY,
+        //     [
+        //         'proxyType' => 'manual',
+        //         'httpProxy' => 'localhost:8080',
+        //         'sslProxy'  => 'localhost:8080',
+        //     ]);
+        $capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
+        $driver = RemoteWebDriver::create(
+            'http://localhost:' . self::$port, $capabilities);
+        printf("Chromedriver launched\n");
+        return $driver;
     }
 
     private static function startChromeDriver()
@@ -84,12 +71,15 @@ class ChromeDriverLoader
         if(!is_file(self::$chromedriver_dir . "/chromedriver"))
             self::downloadBin();
 
-        $instances = array_filter(explode("\n", shell_exec('ps -aux | grep chromedriver')));
-        $running = (count($instances) > 2) ? true : false;
-        if(!$running) {
+        // $instances = array_filter(explode("\n", shell_exec('ps -aux | grep chromedriver')));
+        // $running = (count($instances) > 2) ? true : false;
+        // $running = false;
+        // if(!$running) {
 
-            exec(self::$chromedriver_dir . '/chromedriver --port=' . self::$port . ' > /dev/null 2>&1 &');
-        }
+        exec(self::$chromedriver_dir . '/chromedriver --port=' . self::$port . ' > /dev/null 2>&1 &');
+        sleep(3);
+        
+        // } 
     }
 
     private static function setIp(string $ip_address)
